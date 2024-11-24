@@ -18,8 +18,9 @@ pd.set_option('display.max_colwidth', None)
 pd.set_option('display.max_columns', None)
 
 # API endpoint
-url = ('https://newsapi.org/v2/everything?'
-       'q=stock&'
+keywords = "stock market AND trading AND stock price"
+url = (f'https://newsapi.org/v2/everything?'
+       f'q={keywords}&'
        'from=2024-11-20&'
        'sortBy=popularity&'
        'apiKey=923a0fe1e40f46d39ee8c9b9bc37fe8e')
@@ -44,5 +45,5 @@ df = df[['name', 'url', 'title', 'content', 'publishedAt']]  # Reorder columns
 # Display the DataFrame
 print(df)
 
-# Save to CSV file
 df.to_csv('news_scraping.csv', index=False)
+
