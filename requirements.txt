@@ -1,0 +1,12 @@
+#Packages für Web-Scraping
+requests
+beautifulsoup4
+lxml
+selenium
+scrapy
+
+#Packages für Dataprocessing
+
+
+#Packages für Deep Learning
+tensorflow
