@@ -1,7 +1,9 @@
 '''
 json --> dataframe ---> drop status, totalResult, keep articles.
 Articles dictionary --> keep name, url, title, content, publishedAt --> new dataframe
+f0be9f6a907649978cbca1aa52923045
 '''
+
 import requests
 import pandas as pd
 
