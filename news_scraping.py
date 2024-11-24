@@ -7,7 +7,16 @@ f0be9f6a907649978cbca1aa52923045
 import requests
 import pandas as pd
 
+# url = ("https://newsapi.org/v2/everything?q=Apple&from=2024-11-20&"
+#        "sortBy=popularity&apiKey=923a0fe1e40f46d39ee8c9b9bc37fe8e")
+
+import requests
+import pandas as pd
+
+# Set display options for pandas
 pd.set_option('display.max_colwidth', None)
+pd.set_option('display.max_columns', None)
+
 # API endpoint
 url = ('https://newsapi.org/v2/everything?'
        'q=stock&'
@@ -15,15 +24,25 @@ url = ('https://newsapi.org/v2/everything?'
        'sortBy=popularity&'
        'apiKey=923a0fe1e40f46d39ee8c9b9bc37fe8e')
 
-# url = ("https://newsapi.org/v2/everything?q=Apple&from=2024-11-20&"
-#        "sortBy=popularity&apiKey=923a0fe1e40f46d39ee8c9b9bc37fe8e")
-
 # Send GET request
 response = requests.get(url)
 
-df = pd.DataFrame(response.json())
-df.to_csv('reddit_python.csv', index=False)
+# Parse the JSON response
+data = response.json()
 
-df['content'] = df['articles'].apply(lambda x : x.get('content'))
+# Extract 'articles' field (a list of dictionaries)
+articles = data.get('articles', [])
 
-print(df['content'][2])
+# Create a DataFrame from the 'articles'
+df = pd.DataFrame(articles)
+
+# Select and rename required fields
+df = df[['source', 'url', 'title', 'content', 'publishedAt']].copy()
+df['name'] = df['source'].apply(lambda x: x['name'] if x else None)  # Extract 'name' from 'source'
+df = df[['name', 'url', 'title', 'content', 'publishedAt']]  # Reorder columns
+
+# Display the DataFrame
+print(df)
+
+# Save to CSV file
+df.to_csv('news_scraping.csv', index=False)
