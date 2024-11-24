@@ -14,11 +14,24 @@ def get_news(url):
         soup = BeautifulSoup(response.text, "lxml")
 
         #Inhalt-Container finden
-        headlines = soup.find("h3", attrs={"class": "news-headline-title"})
+        headlines = soup.find("h1", attrs={"class": "news-headline-title"})
 
         #Extrahieren
         news_list = []
         for headline in headlines:
             title = headline.get_text()
-            link = headline.find()
-            //TODO
+            link = headline.find('a')['href'] if headline.find('a') else None
+            full_link = "https://finance.yahoo.com{link}" if link else "N/A"
+            news_list.append({"title": title, "full_link": full_link})
+
+        return news_list
+
+    except requests.exceptions.RequestException as e:
+        print(f"Fehler bei der Anfrage: {e}")
+        return []
+
+#News scrapen und ausgeben:
+news = get_news(url)
+for idx, article in enumerate(news, start=1):
+    print(f"{idx}. {article['title']} - {article['full_link']}")
+
