@@ -1,3 +1,5 @@
+#Nicht funktioniert bei dynamisch JavaScript
+
 import requests
 from bs4 import BeautifulSoup
 
