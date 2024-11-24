@@ -28,3 +28,4 @@ df = pd.DataFrame(data)
 print(df)
 df.to_csv("reddit_posts_comments.csv", index=True)
 
+//TODO --> add publishedAt
