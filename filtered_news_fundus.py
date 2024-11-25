@@ -36,12 +36,4 @@ for article in crawler.crawl(max_articles=100, url_filter=lor(filter1, filter2))
 
 df = pd.DataFrame(articles_data)
 
-df.to_csv('News_Apple.csv', index=False)
-
-print("Artikel wurden erfolgreich gespeichert!")
-
-'''
-1 Source danh rieng cho Hashtag
-1 Source danh cho chung trong thi truong
---> 2 Experiment xem gia cua co phieu thay doi ntn. Chi chon 1 co phieu! z.B. Apple
-'''
+df.to_csv('filtered_news_fundus.csv', index=True)

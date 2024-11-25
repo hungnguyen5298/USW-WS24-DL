@@ -16,6 +16,4 @@ for article in crawler.crawl(max_articles=100):
 
 df = pd.DataFrame(articles_data)
 
-df.to_csv('News_CNBC.csv', index=False)
-
-print("Artikel wurden erfolgreich gespeichert!")
+df.to_csv('unfiltered_news_fundus.csv', index=True)

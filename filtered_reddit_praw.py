@@ -1,5 +1,6 @@
 import praw
 import pandas as pd
+from datetime import datetime, timezone
 
 # Reddit API-Konfiguration
 reddit = praw.Reddit(
@@ -12,7 +13,7 @@ reddit = praw.Reddit(
 # Subreddit auswählen und nach Beiträgen suchen
 subreddit = reddit.subreddit('Stocks+investing+finance')  # Subreddit: 'Stocks'
 search_query = "Apple OR AAPL OR iPhone"  # Suchbegriffe
-posts = subreddit.search(search_query, sort="new", limit=100)  # Neueste Beiträge zu Apple
+posts = subreddit.search(search_query, sort="new", limit=10)  # Neueste Beiträge zu Apple
 
 # Liste zum Speichern der Daten
 data = []
@@ -33,6 +34,7 @@ for submission in posts:
         "Content": content,
         "URL": url,
         "Upvotes": upvotes,
+        'Published_at': datetime.fromtimestamp(submission.created_utc, tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S'),
         "Comments": "; ".join(comments)
     })
 
@@ -40,6 +42,4 @@ for submission in posts:
 df = pd.DataFrame(data)
 
 # DataFrame in CSV speichern
-df.to_csv("apple_discussions_in_stocks.csv", index=False)
-
-print("Daten wurden erfolgreich in 'apple_discussions_in_stocks.csv' gespeichert.")
+df.to_csv("filtered_reddit_praw.csv", index=True)
