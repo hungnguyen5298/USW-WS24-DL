@@ -51,6 +51,6 @@ for article in crawler.crawl(max_articles=100, url_filter=lor(filter1, filter2))
 
 df = pd.DataFrame(articles_data)
 
-os.makedirs("project_raw_data", exist_ok=True)
-file_path = os.path.join("project_raw_data", "filtered_news_fundus.csv")
+os.makedirs("../project_raw_data", exist_ok=True)
+file_path = os.path.join("../project_raw_data", "filtered_news_fundus.csv")
 df.to_csv(file_path, index=True)

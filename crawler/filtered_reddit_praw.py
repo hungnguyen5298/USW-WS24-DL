@@ -49,6 +49,6 @@ for submission in posts:
 df = pd.DataFrame(data)
 
 # DataFrame in CSV speichern
-os.makedirs("project_raw_data", exist_ok=True)
-file_path = os.path.join("project_raw_data", "filtered_reddit_praw.csv")
+os.makedirs("../project_raw_data", exist_ok=True)
+file_path = os.path.join("../project_raw_data", "filtered_reddit_praw.csv")
 df.to_csv(file_path, index=True)
