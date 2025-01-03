@@ -13,7 +13,7 @@ one_month_ago = today - timedelta(days=30)
 from_date = one_month_ago.strftime('%Y-%m-%dT%H:%M:%S')
 to_date = today.strftime('%Y-%m-%dT%H:%M:%S')
 
-keyword = 'apple OR iPhone OR iPad OR MacBook OR APPL'
+keyword = 'apple OR iPhone OR iPad OR MacBook OR AAPL'
 parameters = {
     'q': keyword,
     'from': from_date,

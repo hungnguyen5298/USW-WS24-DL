@@ -16,4 +16,5 @@ print(stock_df.head())
 fundus_df_selected = fundus_df[["", ]]
 reddit_df_selected = reddit_df[["", ]]
 newsapi_df_selected = newsapi_df[["", ]]
+stock_df_selected = stock_df[["", ]]
 
