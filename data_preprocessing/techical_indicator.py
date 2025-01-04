@@ -1,3 +1,8 @@
+'''
+Duplikate! can check lai. Tong chi co 168 Perioden
+'''
+
+
 import os
 
 import pandas as pd
