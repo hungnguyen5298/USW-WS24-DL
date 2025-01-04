@@ -6,11 +6,13 @@ import emoji
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from nltk.sentiment import SentimentIntensityAnalyzer
 
 # Stelle sicher, dass die Stopwörter verfügbar sind
 nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('wordnet')
+nltk.download('vader_lexicon')
 
 # Data importieren
 news_df = pd.read_csv('news_df.csv')
@@ -68,6 +70,33 @@ news_input['Content'] = news_input['Content'].apply(lambda x: normalize_text(x, 
 # Neuer DataFrame mit den normalisierten Spalten 'Title', 'Content' und 'PublishedAt'
 text_preprocessed = news_input[['Title', 'Content', 'PublishedAt']]
 
-# Optional: Speichern des neuen DataFrames
+# Speichern des neuen DataFrames
 text_preprocessed.to_csv('text_preprocessed_VADER.csv', index=False, header=True)
 
+# Sentiment extrahieren
+sia = SentimentIntensityAnalyzer()
+
+# Funktion, um Sentiment-Scores zu berechnen
+def calculate_sentiment(text):
+    sentiment_scores = sia.polarity_scores(text)
+    return sentiment_scores['pos'], sentiment_scores['neu'], sentiment_scores['neg']
+
+# Berechnung der Sentiments für die Kombination von 'Title' und 'Content'
+def compute_sentiment_for_news(row):
+    # Kombiniere Titel und Inhalt zu einem Textstring
+    combined_text = ' '.join(row['Title']) + ' ' + ' '.join(row['Content'])
+
+    # Berechne die Sentiment-Werte für den kombinierten Text
+    pos, neu, neg = calculate_sentiment(combined_text)
+
+    return pd.Series([pos, neu, neg])
+
+
+# Berechne die Sentiment Scores für alle Nachrichten
+news_input[['VADER_Positive', 'VADER_Neutral', 'VADER_Negative']] = news_input.apply(compute_sentiment_for_news, axis=1)
+
+# Speichern der DataFrame mit Sentiment-Werten und 'PublishedAt' Timestamp
+news_sentiment = news_input[['PublishedAt', 'VADER_Positive', 'VADER_Neutral', 'VADER_Negative']]
+
+# Optional: Speichern des neuen DataFrames mit Sentiment-Werten in eine CSV-Datei
+news_sentiment.to_csv('news_sentiment_VADER.csv', index=False, header=True)
