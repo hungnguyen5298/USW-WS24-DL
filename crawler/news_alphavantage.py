@@ -10,9 +10,9 @@ data = r.json()
 
 # JSON normalisieren
 if 'feed' in data:
-    df = pd.json_normalize(data['feed'])
+    new_df = pd.json_normalize(data['feed'])
 else:
-    df = pd.json_normalize(data)
+    new_df = pd.json_normalize(data)
 
 # Funktion zur Konvertierung von UTC-Zeit in Berliner Zeit
 def convert_to_berlin_time(utc_time_str):
@@ -24,10 +24,28 @@ def convert_to_berlin_time(utc_time_str):
     return berlin_time.strftime("%Y-%m-%d %H:%M:%S")
 
 # Anwenden der Funktion auf die Spalte 'time_published'
-if 'time_published' in df.columns:
-    df['time_published'] = df['time_published'].apply(convert_to_berlin_time)
+if 'time_published' in new_df.columns:
+    new_df['time_published'] = new_df['time_published'].apply(convert_to_berlin_time)
 
-# In CSV speichern
-os.makedirs("../project_raw_data", exist_ok=True)
-file_path = os.path.join("../project_raw_data", "filtered_news_alphavantage.csv")
-df.to_csv(file_path, index=True)
+# Überprüfen, ob die CSV-Datei bereits existiert
+csv_file = "../project_raw_data/filtered_news_alphavantage.csv"
+
+if os.path.exists(csv_file):
+    # Existierende Datei laden und kombinieren
+    existing_df = pd.read_csv(csv_file)
+    combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+else:
+    # Neue Daten als Startpunkt verwenden
+    combined_df = new_df
+
+# Duplikate entfernen (falls gewünscht), basierend auf der Spalte 'url' (oder einer anderen eindeutigen Spalte)
+if 'url' in combined_df.columns:
+    combined_df = combined_df.drop_duplicates(subset=['url'], keep='last')
+
+# Ordner erstellen, falls nicht vorhanden
+os.makedirs(os.path.dirname(csv_file), exist_ok=True)
+
+# Kombinierte Daten in die CSV-Datei speichern
+combined_df.to_csv(csv_file, index=False, encoding="utf-8")
+
+print(f"Die Daten wurden erfolgreich in {csv_file} gespeichert.")

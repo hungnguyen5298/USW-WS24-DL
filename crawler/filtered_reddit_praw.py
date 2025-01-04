@@ -13,42 +13,55 @@ reddit = praw.Reddit(
     password="ZGC6d37yhQAt_k!")
 
 # Subreddit auswählen und nach Beiträgen suchen
-subreddit = reddit.subreddit('stocks+investing+finance+stockmarket+wallstreetbets+trading')  # Subreddit: Stocks, Investing, Finance, StockMarket, wallstreetbets, trading,
+subreddit = reddit.subreddit('stocks+investing+finance+stockmarket+wallstreetbets+trading')  # Subreddits kombinieren
 search_query = "Apple OR AAPL OR iPhone OR iPad OR Macbook OR AppleInc"  # Suchbegriffe
-posts = subreddit.search(search_query, sort="new", limit=250)  # Neueste Beiträge zu Apple
+posts = subreddit.search(search_query, sort="new", limit=200)  # Neueste Beiträge abrufen
 
 # Liste zum Speichern der Daten
 data = []
 
-# Posts durchgehen und Daten extrahieren
+# Beiträge durchgehen und Daten extrahieren
 for submission in posts:
-    title = submission.title
-    content = submission.selftext if submission.selftext else "No content"
-    url = submission.url
-    upvotes = submission.score
+    try:
+        title = submission.title
+        content = submission.selftext if submission.selftext else "No content"
+        url = submission.url
+        upvotes = submission.score
 
-    # Kommentare extrahieren
-    submission.comments.replace_more(limit=0)
-    comments = [comment.body for comment in submission.comments.list()]
+        # Kommentare extrahieren
+        submission.comments.replace_more(limit=0)
+        comments = [comment.body for comment in submission.comments.list()]
 
-    utc_time = datetime.fromtimestamp(submission.created_utc, tz=utc)
-    germany_tz = timezone('Europe/Berlin')
-    germany_time = utc_time.astimezone(germany_tz)
-    published_at = germany_time.strftime('%Y-%m-%d %H:%M:%S')
+        # Veröffentlichungsdatum konvertieren
+        utc_time = datetime.fromtimestamp(submission.created_utc, tz=utc)
+        germany_tz = timezone('Europe/Berlin')
+        germany_time = utc_time.astimezone(germany_tz)
+        published_at = germany_time.strftime('%Y-%m-%d %H:%M:%S')
 
-    data.append({
-        "Title": title,
-        "Content": content,
-        "URL": url,
-        "Upvotes": upvotes,
-        'Published_at': published_at,
-        "Comments": "; ".join(comments)
-    })
+        # Beitrag hinzufügen
+        data.append({
+            "Title": title,
+            "Content": content,
+            "URL": url,
+            "Upvotes": upvotes,
+            "Published_at": published_at,
+            "Comments": "; ".join(comments)
+        })
+
+    except Exception as e:
+        print(f"Fehler bei Beitrag {submission.id}: {e}")
 
 # DataFrame erstellen
-df = pd.DataFrame(data)
+if data:
+    df = pd.DataFrame(data)
 
-# DataFrame in CSV speichern
-os.makedirs("../project_raw_data", exist_ok=True)
-file_path = os.path.join("../project_raw_data", "filtered_reddit_praw.csv")
-df.to_csv(file_path, index=True)
+    # Ordner erstellen, falls nicht vorhanden
+    os.makedirs("../project_raw_data", exist_ok=True)
+
+    # Daten in CSV speichern
+    file_path = os.path.join("../project_raw_data", "filtered_reddit_praw.csv")
+    df.to_csv(file_path, index=False, encoding="utf-8")
+
+    print(f"Die Daten wurden erfolgreich in {file_path} gespeichert.")
+else:
+    print("Keine Daten gefunden.")
