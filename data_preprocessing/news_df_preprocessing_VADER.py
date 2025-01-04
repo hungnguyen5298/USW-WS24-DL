@@ -69,5 +69,5 @@ news_input['Content'] = news_input['Content'].apply(lambda x: normalize_text(x, 
 text_preprocessed = news_input[['Title', 'Content', 'PublishedAt']]
 
 # Optional: Speichern des neuen DataFrames
-text_preprocessed.to_csv('text_preprocessed.csv', index=False, header=True)
+text_preprocessed.to_csv('text_preprocessed_VADER.csv', index=False, header=True)
 
