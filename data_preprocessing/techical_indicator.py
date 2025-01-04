@@ -1,5 +1,14 @@
 '''
-Duplikate! can check lai. Tong chi co 168 Perioden
+TODO: duplicate values in stock data!!!
+Tong chi co 168 Perioden
+03-12-2024 09:30:00 - 03-01-2025 15:30:00
+duplicate lam ham bi tinh sai!!!
+
+TODO: Doi ten!
+technical_indicator.py --> stock_data_fe.py
+output --> stock_data_added.csv
+
+TODO: Comment bang tieng anh/duc 
 '''
 
 
