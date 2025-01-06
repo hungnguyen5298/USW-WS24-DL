@@ -24,8 +24,7 @@ query = {
             {
                 "$or": [
                     {"lang": "eng"},
-                    {"lang": "deu"},
-                    {"lang": "zho"}
+                    {"lang": "deu"}
                 ]
             }
         ]
@@ -40,7 +39,7 @@ q = QueryArticlesIter.initWithComplexQuery(query)
 articles = []
 berlin_tz = pytz.timezone('Europe/Berlin')  # Berlin timezone
 
-for article in q.execQuery(er, maxItems=100):
+for article in q.execQuery(er, maxItems=2000):
     # Parse 'Published on' to datetime
     try:
         published_utc = datetime.strptime(article.get("date"), '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=pytz.utc)
