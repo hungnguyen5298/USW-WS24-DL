@@ -1,73 +1,43 @@
 import pandas as pd
-from tensorflow.python.ops.state_ops import assign
 
-# Laden des Datensatzes
-data = pd.read_csv('../VADER_text_pp_sentiment/news_sentiment_VADER.csv')
-data['PublishedAt'] = pd.to_datetime(data['PublishedAt'])
+# Daten laden
+stock_data = pd.read_csv('../../project_raw_data/stock_data_apple_full_5min.csv')
+news_data = pd.read_csv('../FinBERT_text_pp_sentiment/news_sentiment_FinBERT.csv')
 
-# Definiere den Zeitraum für die Analyse
-start_date = pd.to_datetime('2024-12-03')
-end_date = pd.to_datetime('2025-01-03')
-news_date_selected = data[(data['PublishedAt'] >= start_date) & (data['PublishedAt'] <= end_date)].copy()
-import pandas as pd
+# Sicherstellen, dass die Zeitspalten in beiden DataFrames als Datetime-Objekte vorliegen
+stock_data['Datetime'] = pd.to_datetime(stock_data['Datetime'])
+news_data['PublishedAt'] = pd.to_datetime(news_data['PublishedAt'])
 
-# Liste für die Zeitstempel erstellen
-time_range = []
+# DataFrame mit den Zeitstempeln aus stock_data
+segments_df = pd.DataFrame({"Segment": stock_data['Datetime'].sort_values().unique()})
 
-# Für jedes Datum im Zeitraum die stündlichen Zeitstempel von 09:30 bis 16:00 generieren
-current_date = start_date
-while current_date <= end_date:
-    # Überprüfen, ob der aktuelle Tag ein Werktag ist (Montag bis Freitag)
-    if current_date.weekday() < 5:  # Montag bis Freitag (0-4)
-        day_start = pd.Timestamp(current_date.strftime('%Y-%m-%d') + ' 09:30:00')
-        day_end = pd.Timestamp(current_date.strftime('%Y-%m-%d') + ' 16:00:00')
+# Funktion zur Zuordnung der Timestamps
+def assign_segment(published_at):
+    # Findet den ersten Timestamp in 'stock_data', der größer oder gleich dem PublishedAt ist
+    for ts in segments_df['Segment']:
+        if published_at <= ts:
+            return ts
+    # Fallback: Wenn kein Segment gefunden wurde, None zurückgeben (nicht erwartet)
+    return None
 
-        # Zeitstempel von 09:30 bis 16:00 stündlich erzeugen
-        daily_range = pd.date_range(start=day_start, end=day_end, freq='h')
+# Segment-Zuordnung zu jeder Nachricht in news_sentiment_VADER
+news_data['Segment'] = news_data['PublishedAt'].apply(assign_segment)
 
-        # Die täglichen Zeitstempel zur Liste hinzufügen
-        time_range.extend(daily_range)
+# Gruppieren der Nachrichten basierend auf den Segmenten und Aggregieren der FinBERT-Werte
+grouped_sentiments = (
+    news_data.groupby("Segment")
+    .agg({
+        "Positive_Prob": "mean",
+        "Neutral_Prob": "mean",
+        "Negative_Prob": "mean"
+    })
+    .reset_index()
+)
 
-    # Nächster Tag
-    current_date += pd.Timedelta(days=1)
+# Fehlende Segmente hinzufügen und mit 0 auffüllen
+result = pd.merge(segments_df, grouped_sentiments, on="Segment", how="left").fillna(0)
 
-# Erstelle eine leere Liste für die Gruppen
-groups = []
+# Ergebnis speichern
+result.to_csv("agg_sentiment_FinBERT.csv", index=False)
 
-# Durchlaufe jedes PublishedAt im DataFrame und ordne es dem passenden Zeitbereich zu
-for idx, row in news_date_selected.iterrows():
-    published_at = row['PublishedAt']
-    assigned = False  # Flag, um zu überprüfen, ob ein passender Zeitraum gefunden wurde
-
-    # Suche den passenden Zeitbereich in time_range
-    for i in range(len(time_range) - 1):  # Vergleiche mit den benachbarten Zeitstempeln
-        if time_range[i] <= published_at < time_range[i + 1]:
-            groups.append(time_range[
-                              i + 1])  # Wenn es zwischen time_range[i] und time_range[i + 1] liegt, dann ordne den oberen Grenzwert zu
-            assigned = True
-            break  # Wenn der passende Bereich gefunden wurde, beende die Schleife
-
-    if not assigned:  # Wenn kein passender Zeitraum gefunden wurde, füge None oder NaN hinzu
-        groups.append(None)  # Hier kannst du auch `pd.NaT` oder einen anderen Wert wie `NaN` verwenden
-
-# Überprüfen, ob die Länge von 'groups' gleich der Länge von 'news_date_selected' ist
-if len(groups) == len(news_date_selected):
-    # Füge die Zeitstempel als neue Spalte in den DataFrame ein
-    news_date_selected['TimeGroup'] = groups
-    # Anzeige der gruppierten Daten
-    print(news_date_selected)
-else:
-    print(
-        f"Fehler: Die Anzahl der Zeitgruppen ({len(groups)}) stimmt nicht mit der Anzahl der Datensätze ({len(news_date_selected)}) überein.")
-
-# Gruppieren nach TimeGroup und Berechnung des Mittelwerts für die Sentiment-Spalten
-result = news_date_selected.groupby('TimeGroup').agg({
-    'VADER_Negative': 'mean',
-    'VADER_Neutral': 'mean',
-    'VADER_Positive': 'mean'
-}).reset_index()
-
-# Umbenennen der Spalten für bessere Lesbarkeit
-result.columns = ['TimeGroup', 'mean_negative', 'mean_neutral', 'mean_positive']
-
-result.to_csv('news_sentiment_VADER_grouped.csv', index=False)
+print("Aggregation abgeschlossen. Die Ergebnisse wurden in 'agg_sentiment_FinBERT.csv' gespeichert.")
