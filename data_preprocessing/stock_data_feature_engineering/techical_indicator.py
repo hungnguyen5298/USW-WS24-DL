@@ -1,78 +1,21 @@
-'''
-TODO: duplicate values in stock data!!!
-Tong chi co 168 Perioden
-03-12-2024 09:30:00 - 03-01-2025 15:30:00
-duplicate lam ham bi tinh sai!!!
-
-TODO: Doi ten!
-technical_indicator.py --> stock_data_fe.py
-output --> stock_data_added.csv
-
-TODO: Comment bang tieng anh/duc 
-'''
-
-
-import os
-
 import pandas as pd
-import numpy as np
+import pandas_ta as ta
 
-# Đường dẫn tới file CSV chứa dữ liệu HLOCV
-csv_file = "~/Dokumente/PycharmProjects/USW-WS24-DL/project_raw_data/stock_data_apple.csv"  # Đường dẫn file CSV
-output_file = "~/Dokumente/PycharmProjects/USW-WS24-DL/data_preprocessing/stock_data_apple_indicators.csv"  # File xuất kết quả
+data = pd.read_csv('../../project_raw_data/stock_data_apple_full_5min.csv')
 
-# Hàm tính RSI
-def calculate_rsi(data, window=14):
-    delta = data['Close'].diff()  # Tính sự thay đổi giá
-    gain = np.where(delta > 0, delta, 0)  # Chỉ lấy giá trị tăng
-    loss = np.where(delta < 0, -delta, 0)  # Chỉ lấy giá trị giảm
+# Berechne die Volatilität (Standardabweichung der Schlusskurse)
+data['Volatility'] = data['Close'].rolling(window=14).std()
 
-    avg_gain = pd.Series(gain).rolling(window=window, min_periods=window).mean()
-    avg_loss = pd.Series(loss).rolling(window=window, min_periods=window).mean()
+# Berechne den RSI
+data['RSI'] = ta.rsi(data['Close'], length=14)
 
-    rs = avg_gain / avg_loss  # Chỉ số sức mạnh tương đối
-    rsi = 100 - (100 / (1 + rs))  # Tính RSI
+# Berechne den OBV
+data['OBV'] = ta.obv(data['Close'], data['Volume'])
 
-    return pd.Series(rsi, index=data.index)
+# Berechne den ATR
+data['ATR'] = ta.atr(data['High'], data['Low'], data['Close'], length=14)
 
+# Zeige die berechneten Indikatoren an
+print(data[['Close', 'Volatility', 'RSI', 'OBV', 'ATR']])
 
-# Hàm tính MACD
-def calculate_macd(data, short_window=12, long_window=26, signal_window=9):
-    short_ema = data['Close'].ewm(span=short_window, adjust=False).mean()
-    long_ema = data['Close'].ewm(span=long_window, adjust=False).mean()
-
-    macd = short_ema - long_ema  # Đường MACD
-    signal_line = macd.ewm(span=signal_window, adjust=False).mean()  # Đường tín hiệu
-
-    return macd, signal_line
-
-# Hàm tính EMA
-def calculate_ema(data, span):
-    return data['Close'].ewm(span=span, adjust=False).mean()
-
-# Đọc dữ liệu từ file CSV
-try:
-    df = pd.read_csv(csv_file)
-except FileNotFoundError:
-    print(f"File {csv_file} không tồn tại. Hãy kiểm tra đường dẫn!")
-    exit()
-
-# Kiểm tra và xử lý nếu thiếu dữ liệu
-if df.isnull().sum().sum() > 0:
-    print("Dữ liệu bị thiếu. Đang xử lý các giá trị thiếu...")
-    df.fillna(method='ffill', inplace=True)
-    df.fillna(method='bfill', inplace=True)
-
-# Tính toán các chỉ số kỹ thuật
-print("Đang tính toán các chỉ số kỹ thuật...")
-df['RSI'] = calculate_rsi(df)
-df['MACD'], df['Signal_Line'] = calculate_macd(df)
-df['EMA_20'] = calculate_ema(df, span=20)
-df['EMA_50'] = calculate_ema(df, span=50)
-
-# Lưu kết quả vào file CSV
-print("Lưu kết quả vào file...")
-os.makedirs(os.path.dirname(output_file), exist_ok=True)
-df.to_csv(output_file, index=False, encoding="utf-8")
-
-print(f"Chỉ số kỹ thuật đã được lưu vào {output_file}.")
+data.to_csv('stock_data_apple_indicators.csv', index=False)
