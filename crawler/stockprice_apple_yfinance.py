@@ -18,7 +18,7 @@ historical_data.reset_index(inplace=True)
 historical_data['Datetime'] = historical_data['Datetime'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
 # Path to save the CSV file
-csv_file = "../project_raw_data/stock_data_apple_full_5min.csv"
+csv_file = "../project_raw_data/stock_data_apple_full_5m.csv"
 
 # Check if the CSV file already exists
 if os.path.exists(csv_file):

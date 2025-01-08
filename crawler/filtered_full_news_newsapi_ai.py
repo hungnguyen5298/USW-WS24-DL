@@ -6,7 +6,7 @@ import os
 
 # Initialize EventRegistry with API key
 er = EventRegistry(apiKey='008ffa8f-3bc2-4fbf-8aad-1d98dcc66279')
-
+#er = EventRegistry(apiKey='a2da419d-e4d5-4825-bdef-fd68ebd4ce0b')
 # Define the query
 query = {
     "$query": {
