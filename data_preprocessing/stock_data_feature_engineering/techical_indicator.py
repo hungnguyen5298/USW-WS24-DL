@@ -15,7 +15,11 @@ data['OBV'] = ta.obv(data['Close'], data['Volume'])
 # Berechne den ATR
 data['ATR'] = ta.atr(data['High'], data['Low'], data['Close'], length=14)
 
-# Zeige die berechneten Indikatoren an
-print(data[['Close', 'Volatility', 'RSI', 'OBV', 'ATR']])
+# Profitchange calculating and labelin
+data['percent_change_close'] = data['Close'].pct_change()
+
+data['Profit_Trend_Label'] = (data['percent_change_close'] > 0).astype(int)
+
+data.drop(columns=['Close', 'percent_change_close'], inplace=True)
 
 data.to_csv('stock_data_apple_indicators.csv', index=False)

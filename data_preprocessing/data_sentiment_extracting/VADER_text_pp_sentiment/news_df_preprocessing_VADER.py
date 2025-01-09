@@ -15,7 +15,7 @@ nltk.download('wordnet')
 nltk.download('vader_lexicon')
 
 # Data importieren
-news_df = pd.read_csv('../data_merging/news_df.csv')
+news_df = pd.read_csv('../../data_merging/news_df.csv')
 
 # Filtern nach Periode von 01-12.2024 - 03.01.2025
 news_df['PublishedAt'] = pd.to_datetime(news_df['PublishedAt'])

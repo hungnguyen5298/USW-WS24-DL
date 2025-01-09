@@ -2,7 +2,7 @@ import pandas as pd
 
 # Beispielhafte Daten laden (ersetze dies mit deinen echten Daten)
 stock_data = pd.read_csv('../../project_raw_data/stock_data_apple_full_5min.csv')
-news_data = pd.read_csv('../FinBERT_text_pp_sentiment/news_sentiment_FinBERT.csv')
+news_data = pd.read_csv('../data_sentiment_extracting/FinBERT_text_pp_sentiment/news_sentiment_FinBERT.csv')
 
 # Konvertiere Zeitstempel in datetime
 stock_data['Datetime'] = pd.to_datetime(stock_data['Datetime'])

@@ -5,7 +5,7 @@ import torch
 
 # Versuche, die CSV-Datei zu laden
 try:
-    news_df = pd.read_csv('../data_merging/news_df.csv')
+    news_df = pd.read_csv('../../data_merging/news_df.csv')
 except FileNotFoundError:
     print("Die Datei 'news_df.csv' wurde nicht gefunden.")
     exit()
