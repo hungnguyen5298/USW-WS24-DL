@@ -22,4 +22,6 @@ data['Profit_Trend_Label'] = (data['percent_change_close'] > 0).astype(int)
 
 data.drop(columns=['Close', 'percent_change_close'], inplace=True)
 
+data.rename(columns={'Datetime':'Timestamp'}, inplace=True)
+
 data.to_csv('stock_data_apple_indicators.csv', index=False)

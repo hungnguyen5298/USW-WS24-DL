@@ -14,13 +14,13 @@ finbert = pd.read_csv('../data_time_shifting/finbert_shifted.csv')
 stock = pd.read_csv('../stock_data_feature_engineering/stock_data_apple_indicators.csv')
 
 # DataFrame for VADER creating
-result = merge_dataframes(vader, stock, 'Timestamp', 'Datetime', 'inner')
-result = result.drop(columns=['timestamp_shifted', 'Datetime', 'Volume', 'Dividends', 'Stock Splits'])
+result = merge_dataframes(vader, stock, 'Timestamp', 'Timestamp', 'inner')
+result = result.drop(columns=['timestamp_shifted', 'Volume', 'Dividends', 'Stock Splits'])
 result = result[['Timestamp', 'VADER_Positive', 'VADER_Neutral', 'VADER_Negative', 'Open', 'High', 'Low', 'Volatility', 'RSI', 'OBV', 'ATR', 'Profit_Trend_Label']]
 result.to_csv('vader_stock_joined.csv', index=False)
 
 # DataFrame for FinBERT creating
-result = merge_dataframes(finbert, stock, 'Timestamp', 'Datetime', 'inner')
-result = result.drop(columns=['timestamp_shifted', 'Datetime', 'Volume', 'Dividends', 'Stock Splits'])
+result = merge_dataframes(finbert, stock, 'Timestamp', 'Timestamp', 'inner')
+result = result.drop(columns=['timestamp_shifted', 'Volume', 'Dividends', 'Stock Splits'])
 result = result[['Timestamp', 'Positive_Prob', 'Neutral_Prob', 'Negative_Prob', 'Open', 'High', 'Low', 'Volatility', 'RSI', 'OBV', 'ATR', 'Profit_Trend_Label']]
 result.to_csv('finbert_stock_joined.csv', index=False)
