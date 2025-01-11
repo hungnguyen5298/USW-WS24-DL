@@ -13,6 +13,11 @@ stock = stock.sort_values(by='Timestamp', ascending=True)
 vader = vader.sort_values(by='Timestamp', ascending=True)
 finbert = finbert.sort_values(by='Timestamp', ascending=True)
 
+# Drop Timestamp
+stock = stock.drop(columns=['Timestamp'])
+vader = vader.drop(columns=['Timestamp'])
+finbert = finbert.drop(columns=['Timestamp'])
+
 # Feature und Target auswählen und Daten splitten
 split_index_stock = int(len(stock) * 0.8)
 stock_X = stock.drop(columns=['Profit_Trend_Label'])
