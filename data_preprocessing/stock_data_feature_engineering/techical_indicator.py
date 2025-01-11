@@ -20,7 +20,7 @@ data['percent_change_close'] = data['Close'].pct_change()
 
 data['Profit_Trend_Label'] = (data['percent_change_close'] > 0).astype(int)
 
-data.drop(columns=['Close', 'percent_change_close', 'Dividends', 'Stock Splits'], inplace=True)
+data.drop(columns=['percent_change_close', 'Dividends', 'Stock Splits'], inplace=True)
 
 data.rename(columns={'Datetime':'Timestamp'}, inplace=True)
 

@@ -19,22 +19,22 @@ vader = vader.drop(columns=['Timestamp'])
 finbert = finbert.drop(columns=['Timestamp'])
 
 # Feature und Target auswählen und Daten splitten
-split_index_stock_train = int(len(stock) * 0.8)
-split_index_stock_val = split_index_stock_train + int(len(stock) * 0.1)
+split_index_stock_train = int(len(stock) * 0.7)
+split_index_stock_val = split_index_stock_train + int(len(stock) * 0.2)
 stock_X = stock.drop(columns=['Profit_Trend_Label'])
 stock_y = stock['Profit_Trend_Label']
 stock_X_train, stock_X_val, stock_X_test = stock_X[:split_index_stock_train], stock_X[split_index_stock_train:split_index_stock_val], stock_X[split_index_stock_val:]
 stock_y_train, stock_y_val, stock_y_test = stock_y[:split_index_stock_train], stock_y[split_index_stock_train:split_index_stock_val], stock_y[split_index_stock_val:]
 
-split_index_vader_train = int(len(vader) * 0.8)
-split_index_vader_val = split_index_vader_train + int(len(vader) * 0.1)
+split_index_vader_train = int(len(vader) * 0.7)
+split_index_vader_val = split_index_vader_train + int(len(vader) * 0.2)
 vader_X = vader.drop(columns=['Profit_Trend_Label'])
 vader_y = vader['Profit_Trend_Label']
 vader_X_train, vader_X_val, vader_X_test = vader_X[:split_index_vader_train], vader_X[split_index_vader_train:split_index_vader_val], vader_X[split_index_vader_val:]
 vader_y_train, vader_y_val, vader_y_test = vader_y[:split_index_vader_train], vader_y[split_index_vader_train:split_index_vader_val], vader_y[split_index_vader_val:]
 
-split_index_finbert_train = int(len(finbert) * 0.8)
-split_index_finbert_val = split_index_finbert_train + int(len(finbert) * 0.1)
+split_index_finbert_train = int(len(finbert) * 0.7)
+split_index_finbert_val = split_index_finbert_train + int(len(finbert) * 0.2)
 finbert_X = finbert.drop(columns=['Profit_Trend_Label'])
 finbert_y = finbert['Profit_Trend_Label']
 finbert_X_train, finbert_X_val, finbert_X_test = finbert_X[:split_index_finbert_train], finbert_X[split_index_finbert_train:split_index_finbert_val], finbert_X[split_index_finbert_val:]
