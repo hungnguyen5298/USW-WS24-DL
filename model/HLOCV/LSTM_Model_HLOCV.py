@@ -14,7 +14,7 @@ X_train = tf.convert_to_tensor(X_train, dtype=tf.float32)
 y_train = tf.convert_to_tensor(y_train, dtype=tf.float32)
 
 # Dataset in Batches
-batch_size = 2  # Empfohlene Batchgröße
+batch_size = 5  # Empfohlene Batchgröße
 dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train))
 dataset = dataset.batch(batch_size, drop_remainder=True)
 
@@ -37,7 +37,7 @@ model.compile(
 )
 
 # Modell trainieren
-history = model.fit(dataset, epochs=200)
+history = model.fit(dataset, epochs=500)
 
 # Modell evaluieren
 loss, accuracy, auc = model.evaluate(dataset)

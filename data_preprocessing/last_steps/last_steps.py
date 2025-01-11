@@ -19,23 +19,26 @@ vader = vader.drop(columns=['Timestamp'])
 finbert = finbert.drop(columns=['Timestamp'])
 
 # Feature und Target auswählen und Daten splitten
-split_index_stock = int(len(stock) * 0.8)
+split_index_stock_train = int(len(stock) * 0.8)
+split_index_stock_val = split_index_stock_train + int(len(stock) * 0.1)
 stock_X = stock.drop(columns=['Profit_Trend_Label'])
 stock_y = stock['Profit_Trend_Label']
-stock_X_train, stock_X_test = stock_X[:split_index_stock], stock_X[split_index_stock:]
-stock_y_train, stock_y_test = stock_y[:split_index_stock], stock_y[split_index_stock:]
+stock_X_train, stock_X_val, stock_X_test = stock_X[:split_index_stock_train], stock_X[split_index_stock_train:split_index_stock_val], stock_X[split_index_stock_val:]
+stock_y_train, stock_y_val, stock_y_test = stock_y[:split_index_stock_train], stock_y[split_index_stock_train:split_index_stock_val], stock_y[split_index_stock_val:]
 
-split_index_vader = int(len(vader) * 0.8)
+split_index_vader_train = int(len(vader) * 0.8)
+split_index_vader_val = split_index_vader_train + int(len(vader) * 0.1)
 vader_X = vader.drop(columns=['Profit_Trend_Label'])
 vader_y = vader['Profit_Trend_Label']
-vader_X_train, vader_X_test = vader_X[:split_index_vader], vader_X[split_index_vader:]
-vader_y_train, vader_y_test = vader_y[:split_index_vader], vader_y[split_index_vader:]
+vader_X_train, vader_X_val, vader_X_test = vader_X[:split_index_vader_train], vader_X[split_index_vader_train:split_index_vader_val], vader_X[split_index_vader_val:]
+vader_y_train, vader_y_val, vader_y_test = vader_y[:split_index_vader_train], vader_y[split_index_vader_train:split_index_vader_val], vader_y[split_index_vader_val:]
 
-split_index_finbert = int(len(finbert) * 0.8)
+split_index_finbert_train = int(len(finbert) * 0.8)
+split_index_finbert_val = split_index_finbert_train + int(len(finbert) * 0.1)
 finbert_X = finbert.drop(columns=['Profit_Trend_Label'])
 finbert_y = finbert['Profit_Trend_Label']
-finbert_X_train, finbert_X_test = finbert_X[:split_index_finbert], finbert_X[split_index_finbert:]
-finbert_y_train, finbert_y_test = finbert_y[:split_index_finbert], finbert_y[split_index_finbert:]
+finbert_X_train, finbert_X_val, finbert_X_test = finbert_X[:split_index_finbert_train], finbert_X[split_index_finbert_train:split_index_finbert_val], finbert_X[split_index_finbert_val:]
+finbert_y_train, finbert_y_val, finbert_y_test = finbert_y[:split_index_finbert_train], finbert_y[split_index_finbert_train:split_index_finbert_val], finbert_y[split_index_finbert_val:]
 
 # MinMax-Skalierung nur auf numerische Features
 scaler = MinMaxScaler(feature_range=(0, 1))
@@ -43,16 +46,19 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 # Stock-Daten skalieren
 numerical_columns_stock = stock_X_train.select_dtypes(include=['float64', 'int64']).columns
 stock_X_train[numerical_columns_stock] = scaler.fit_transform(stock_X_train[numerical_columns_stock])
+stock_X_val[numerical_columns_stock] = scaler.transform(stock_X_val[numerical_columns_stock])
 stock_X_test[numerical_columns_stock] = scaler.transform(stock_X_test[numerical_columns_stock])
 
 # Vader-Daten skalieren
 numerical_columns_vader = vader_X_train.select_dtypes(include=['float64', 'int64']).columns
 vader_X_train[numerical_columns_vader] = scaler.fit_transform(vader_X_train[numerical_columns_vader])
+vader_X_val[numerical_columns_vader] = scaler.transform(vader_X_val[numerical_columns_vader])
 vader_X_test[numerical_columns_vader] = scaler.transform(vader_X_test[numerical_columns_vader])
 
 # FinBERT-Daten skalieren
 numerical_columns_finbert = finbert_X_train.select_dtypes(include=['float64', 'int64']).columns
 finbert_X_train[numerical_columns_finbert] = scaler.fit_transform(finbert_X_train[numerical_columns_finbert])
+finbert_X_val[numerical_columns_finbert] = scaler.transform(finbert_X_val[numerical_columns_finbert])
 finbert_X_test[numerical_columns_finbert] = scaler.transform(finbert_X_test[numerical_columns_finbert])
 
 # Sequenzen erstellen
@@ -69,14 +75,17 @@ def create_sequences(X, y, window_size):
 window_size = 3
 # Sequenzen für Stock-Daten
 X_train_stock, y_train_stock = create_sequences(stock_X_train.reset_index(drop=True), stock_y_train.reset_index(drop=True), window_size)
+X_val_stock, y_val_stock = create_sequences(stock_X_val.reset_index(drop=True), stock_y_val.reset_index(drop=True), window_size)
 X_test_stock, y_test_stock = create_sequences(stock_X_test.reset_index(drop=True), stock_y_test.reset_index(drop=True), window_size)
 
 # Sequenzen für Vader-Daten
 X_train_vader, y_train_vader = create_sequences(vader_X_train.reset_index(drop=True), vader_y_train.reset_index(drop=True), window_size)
+X_val_vader, y_val_vader = create_sequences(vader_X_val.reset_index(drop=True), vader_y_val.reset_index(drop=True), window_size)
 X_test_vader, y_test_vader = create_sequences(vader_X_test.reset_index(drop=True), vader_y_test.reset_index(drop=True), window_size)
 
 # Sequenzen für FinBERT-Daten
 X_train_finbert, y_train_finbert = create_sequences(finbert_X_train.reset_index(drop=True), finbert_y_train.reset_index(drop=True), window_size)
+X_val_finbert, y_val_finbert = create_sequences(finbert_X_val.reset_index(drop=True), finbert_y_val.reset_index(drop=True), window_size)
 X_test_finbert, y_test_finbert = create_sequences(finbert_X_test.reset_index(drop=True), finbert_y_test.reset_index(drop=True), window_size)
 
 # Speichern der Sequenzen mit angepasstem Pfad
@@ -87,12 +96,15 @@ def save_to_npy(output_dir, X, y, file_prefix):
 
 # Stock-Daten speichern
 save_to_npy('../../model/HLOCV',X_train_stock, y_train_stock, 'stock_train')
+save_to_npy('../../model/HLOCV', X_val_stock, y_val_stock, 'stock_val')
 save_to_npy('../../model/HLOCV',X_test_stock, y_test_stock, 'stock_test')
 
 # Vader-Daten speichern
 save_to_npy('../../model/HLOCV_VADER',X_train_vader, y_train_vader, 'vader_train')
+save_to_npy('../../model/HLOCV_VADER', X_val_vader, y_val_vader, 'vader_val')
 save_to_npy('../../model/HLOCV_VADER', X_test_vader, y_test_vader, 'vader_test')
 
 # FinBERT-Daten speichern
 save_to_npy('../../model/HLOCV_FinBERT', X_train_finbert, y_train_finbert, 'finbert_train')
+save_to_npy('../../model/HLOCV_FinBERT', X_val_finbert, y_val_finbert, 'finbert_val')
 save_to_npy('../../model/HLOCV_FinBERT', X_test_finbert, y_test_finbert, 'finbert_test')
