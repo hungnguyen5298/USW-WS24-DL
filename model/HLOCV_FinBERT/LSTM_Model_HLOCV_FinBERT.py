@@ -96,28 +96,19 @@ y_test_rescaled = scaler_y_finbert_test.inverse_transform(y_test_np.reshape(-1, 
 mae_rescaled = mean_absolute_error(y_test_rescaled, predictions_rescaled)
 print(f"MAE (nach Rückskalierung): {mae_rescaled:.4f}")
 
-'''# Test-Ergebnisse plotten
-test_metrics = ['loss', 'mae']
-test_values = [test_results[metric] for metric in test_metrics]
-
-plt.bar(test_metrics, test_values)
-plt.title("Test Metrics")
-plt.ylabel("Value")
-plt.show()'''
-
 # Vorhersagen vs. echte Werte plotten
 plt.figure(figsize=(10, 6))
 plt.plot(y_test_rescaled, label='Echt')
 plt.plot(predictions_rescaled, label='Vorhersagen')
 plt.legend()
-plt.title('Vorhersagen vs. Echte Preis von AAPL mit HLOCV-Daten + Sentimentdaten aus FinBERT')
+plt.title('Vorhersagen vs. Echte Werte von AAPL mit HLOCV-Daten + Sentimentdaten aus FinBERT')
 plt.show()
 
 # Learning Curve: Verlust (Loss) plotten
 plt.figure(figsize=(10, 6))
 plt.plot(history.history['loss'], label='Training Loss', color='blue')
 plt.plot(history.history['val_loss'], label='Validation Loss', color='orange')
-plt.title('Learning Curve (Loss)')
+plt.title('Learning Curve (Loss) von AAPL mit HLOCV-Daten + Sentimentdaten aus FinBERT')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
@@ -129,40 +120,9 @@ if 'mae' in history.history:
     plt.figure(figsize=(10, 6))
     plt.plot(history.history['mae'], label='Training MAE', color='green')
     plt.plot(history.history['val_mae'], label='Validation MAE', color='red')
-    plt.title('Learning Curve (MAE)')
+    plt.title('Learning Curve (MAE) von AAPL mit HLOCV-Daten + Sentimentdaten aus FinBERT')
     plt.xlabel('Epoch')
     plt.ylabel('Mean Absolute Error')
     plt.legend()
     plt.grid(True)
     plt.show()
-
-residuals = y_test_rescaled - predictions_rescaled
-
-# Histogramm der Residuen
-plt.figure(figsize=(10, 6))
-plt.hist(residuals, bins=50, color='purple', alpha=0.7)
-plt.title('Histogramm der Residuen')
-plt.xlabel('Fehler (Residuen)')
-plt.ylabel('Häufigkeit')
-plt.grid(True)
-plt.show()
-
-# Residuen über Zeit
-plt.figure(figsize=(10, 6))
-plt.plot(residuals, label='Residuen', color='brown')
-plt.axhline(0, color='black', linestyle='--', linewidth=1)
-plt.title('Residuen über Zeit')
-plt.xlabel('Zeitpunkte')
-plt.ylabel('Fehler')
-plt.legend()
-plt.grid(True)
-plt.show()
-
-plt.figure(figsize=(10, 6))
-plt.scatter(y_test_rescaled, predictions_rescaled, alpha=0.6, color='darkblue')
-plt.plot([y_test_rescaled.min(), y_test_rescaled.max()], [y_test_rescaled.min(), y_test_rescaled.max()], color='red', linestyle='--', linewidth=2)
-plt.title('Scatter-Plot: Vorhersagen vs. Echte Werte')
-plt.xlabel('Echte Werte')
-plt.ylabel('Vorhersagen')
-plt.grid(True)
-plt.show()
