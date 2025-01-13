@@ -26,7 +26,7 @@ X_test = tf.convert_to_tensor(X_test, dtype=tf.float32)
 y_test = tf.convert_to_tensor(y_test, dtype=tf.float32)
 
 # Batch-Größe definieren
-batch_size = 1
+batch_size = 16
 
 # Trainings- und Validierungsdatensatz erstellen
 train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size, drop_remainder=True)
@@ -38,16 +38,16 @@ input_size = X_train.shape[2]
 seq_len = X_train.shape[1]
 
 '''model = Sequential([
-    LSTM(32, input_shape=(seq_len, input_size), recurrent_regularizer='l2',return_sequences=False),
-    #Dropout(0.1),
+    LSTM(32, input_shape=(seq_len, input_size),return_sequences=False),
+    Dropout(0.1),
     Dense(1, activation = 'sigmoid')
 ])'''
 
-'''model = Sequential([
+model = Sequential([
     LSTM(32, input_shape=(seq_len, input_size), return_sequences=True),
     LSTM(16, return_sequences=False),
     Dense(1, activation='sigmoid')
-])'''
+])
 
 '''model = Sequential([
     LSTM(32, input_shape=(seq_len, input_size), return_sequences=False),
@@ -55,7 +55,7 @@ seq_len = X_train.shape[1]
     Dense(1, activation='sigmoid')
 ])'''
 
-model = Sequential([
+'''model = Sequential([
     GRU(128, input_shape=(seq_len, input_size), return_sequences=True),
     Dropout(0.5),
     BatchNormalization(),
@@ -66,7 +66,7 @@ model = Sequential([
     Dense(16, activation='relu'),
     Dropout(0.5),
     Dense(1, activation='sigmoid')
-])
+])'''
 
 model.summary()
 

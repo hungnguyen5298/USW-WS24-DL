@@ -57,31 +57,50 @@ finbert_X_train, finbert_X_val, finbert_X_test = finbert_X[:split_index_finbert_
 finbert_y_train, finbert_y_val, finbert_y_test = finbert_y[:split_index_finbert_train], finbert_y[split_index_finbert_train:split_index_finbert_val], finbert_y[split_index_finbert_val:]
 
 # MinMax-Skalierung nur auf numerische Features
-scaler = MinMaxScaler(feature_range=(0, 1))
-#scaler = StandardScaler()
 
 # Stock-Daten skalieren
+scaler_X_stock_train = MinMaxScaler(feature_range=(0, 1))
+scaler_X_stock_val = MinMaxScaler(feature_range=(0, 1))
+scaler_X_stock_test = MinMaxScaler(feature_range=(0, 1))
+
 numerical_columns_stock = stock_X_train.select_dtypes(include=['float64', 'int64']).columns
-stock_X_train[numerical_columns_stock] = scaler.fit_transform(stock_X_train[numerical_columns_stock])
-stock_X_val[numerical_columns_stock] = scaler.transform(stock_X_val[numerical_columns_stock])
-stock_X_test[numerical_columns_stock] = scaler.transform(stock_X_test[numerical_columns_stock])
+
+stock_X_train[numerical_columns_stock] = scaler_X_stock_train.fit_transform(stock_X_train[numerical_columns_stock])
+stock_X_val[numerical_columns_stock] = scaler_X_stock_val.fit_transform(stock_X_val[numerical_columns_stock])
+stock_X_test[numerical_columns_stock] = scaler_X_stock_test.fit_transform(stock_X_test[numerical_columns_stock])
+
+# Stock2-Daten skalieren
+scaler_X_stock2_train = MinMaxScaler(feature_range=(0, 1))
+scaler_X_stock2_val = MinMaxScaler(feature_range=(0, 1))
+scaler_X_stock2_test = MinMaxScaler(feature_range=(0, 1))
 
 numerical_columns_stock2 = stock2_X_train.select_dtypes(include=['float64', 'int64']).columns
-stock2_X_train[numerical_columns_stock2] = scaler.fit_transform(stock2_X_train[numerical_columns_stock2])
-stock2_X_val[numerical_columns_stock2] = scaler.transform(stock2_X_val[numerical_columns_stock2])
-stock2_X_test[numerical_columns_stock2] = scaler.transform(stock2_X_test[numerical_columns_stock2])
+
+stock2_X_train[numerical_columns_stock2] = scaler_X_stock2_train.fit_transform(stock2_X_train[numerical_columns_stock2])
+stock2_X_val[numerical_columns_stock2] = scaler_X_stock2_val.fit_transform(stock2_X_val[numerical_columns_stock2])
+stock2_X_test[numerical_columns_stock2] = scaler_X_stock2_test.fit_transform(stock2_X_test[numerical_columns_stock2])
 
 # Vader-Daten skalieren
+scaler_X_vader_train = MinMaxScaler(feature_range=(0, 1))
+scaler_X_vader_val = MinMaxScaler(feature_range=(0, 1))
+scaler_X_vader_test = MinMaxScaler(feature_range=(0, 1))
+
 numerical_columns_vader = vader_X_train.select_dtypes(include=['float64', 'int64']).columns
-vader_X_train[numerical_columns_vader] = scaler.fit_transform(vader_X_train[numerical_columns_vader])
-vader_X_val[numerical_columns_vader] = scaler.transform(vader_X_val[numerical_columns_vader])
-vader_X_test[numerical_columns_vader] = scaler.transform(vader_X_test[numerical_columns_vader])
+
+vader_X_train[numerical_columns_vader] = scaler_X_vader_train.fit_transform(vader_X_train[numerical_columns_vader])
+vader_X_val[numerical_columns_vader] = scaler_X_vader_val.fit_transform(vader_X_val[numerical_columns_vader])
+vader_X_test[numerical_columns_vader] = scaler_X_vader_test.fit_transform(vader_X_test[numerical_columns_vader])
 
 # FinBERT-Daten skalieren
+scaler_X_finbert_train = MinMaxScaler(feature_range=(0, 1))
+scaler_X_finbert_val = MinMaxScaler(feature_range=(0, 1))
+scaler_X_finbert_test = MinMaxScaler(feature_range=(0, 1))
+
 numerical_columns_finbert = finbert_X_train.select_dtypes(include=['float64', 'int64']).columns
-finbert_X_train[numerical_columns_finbert] = scaler.fit_transform(finbert_X_train[numerical_columns_finbert])
-finbert_X_val[numerical_columns_finbert] = scaler.transform(finbert_X_val[numerical_columns_finbert])
-finbert_X_test[numerical_columns_finbert] = scaler.transform(finbert_X_test[numerical_columns_finbert])
+
+finbert_X_train[numerical_columns_finbert] = scaler_X_finbert_train.fit_transform(finbert_X_train[numerical_columns_finbert])
+finbert_X_val[numerical_columns_finbert] = scaler_X_finbert_val.fit_transform(finbert_X_val[numerical_columns_finbert])
+finbert_X_test[numerical_columns_finbert] = scaler_X_finbert_test.fit_transform(finbert_X_test[numerical_columns_finbert])
 
 # Sequenzen erstellen
 def create_sequences(X, y, window_size):
@@ -103,8 +122,6 @@ X_test_stock, y_test_stock = create_sequences(stock_X_test.reset_index(drop=True
 X_train_stock2, y_train_stock2 = create_sequences(stock2_X_train.reset_index(drop=True), stock2_y_train.reset_index(drop=True), window_size)
 X_val_stock2, y_val_stock2 = create_sequences(stock2_X_val.reset_index(drop=True), stock2_y_val.reset_index(drop=True), window_size)
 X_test_stock2, y_test_stock2 = create_sequences(stock2_X_test.reset_index(drop=True), stock2_y_test.reset_index(drop=True), window_size)
-
-
 
 
 # Sequenzen für Vader-Daten
