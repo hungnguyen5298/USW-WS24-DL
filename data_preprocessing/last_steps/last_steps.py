@@ -1,20 +1,23 @@
 import os
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 # Daten importieren
 stock = pd.read_csv('../stock_data_feature_engineering/stock_data_apple_indicators.csv')
+stock2 = pd.read_csv('../stock_data_feature_engineering/stock_data_apple_indicators_longer.csv')
 vader = pd.read_csv('../data_merging/vader_stock_joined.csv')
 finbert = pd.read_csv('../data_merging/finbert_stock_joined.csv')
 
 # Nach Datum sortieren
 stock = stock.sort_values(by='Timestamp', ascending=True)
+stock2 = stock2.sort_values(by='Timestamp', ascending=True)
 vader = vader.sort_values(by='Timestamp', ascending=True)
 finbert = finbert.sort_values(by='Timestamp', ascending=True)
 
 # Drop Timestamp
 stock = stock.drop(columns=['Timestamp'])
+stock2 = stock2.drop(columns=['Timestamp'])
 vader = vader.drop(columns=['Timestamp'])
 finbert = finbert.drop(columns=['Timestamp'])
 
@@ -25,6 +28,19 @@ stock_X = stock.drop(columns=['Profit_Trend_Label'])
 stock_y = stock['Profit_Trend_Label']
 stock_X_train, stock_X_val, stock_X_test = stock_X[:split_index_stock_train], stock_X[split_index_stock_train:split_index_stock_val], stock_X[split_index_stock_val:]
 stock_y_train, stock_y_val, stock_y_test = stock_y[:split_index_stock_train], stock_y[split_index_stock_train:split_index_stock_val], stock_y[split_index_stock_val:]
+
+split_index_stock2_train = int(len(stock2) * 0.7)
+split_index_stock2_val = split_index_stock2_train + int(len(stock2) * 0.2)
+stock2_X = stock2.drop(columns=['Profit_Trend_Label'])
+stock2_y = stock2['Profit_Trend_Label']
+stock2_X_train, stock2_X_val, stock2_X_test = stock2_X[:split_index_stock2_train], stock2_X[split_index_stock2_train:split_index_stock2_val], stock2_X[split_index_stock2_val:]
+stock2_y_train, stock2_y_val, stock2_y_test = stock2_y[:split_index_stock2_train], stock2_y[split_index_stock2_train:split_index_stock2_val], stock2_y[split_index_stock2_val:]
+
+
+
+
+
+
 
 split_index_vader_train = int(len(vader) * 0.7)
 split_index_vader_val = split_index_vader_train + int(len(vader) * 0.2)
@@ -42,12 +58,18 @@ finbert_y_train, finbert_y_val, finbert_y_test = finbert_y[:split_index_finbert_
 
 # MinMax-Skalierung nur auf numerische Features
 scaler = MinMaxScaler(feature_range=(0, 1))
+#scaler = StandardScaler()
 
 # Stock-Daten skalieren
 numerical_columns_stock = stock_X_train.select_dtypes(include=['float64', 'int64']).columns
 stock_X_train[numerical_columns_stock] = scaler.fit_transform(stock_X_train[numerical_columns_stock])
 stock_X_val[numerical_columns_stock] = scaler.transform(stock_X_val[numerical_columns_stock])
 stock_X_test[numerical_columns_stock] = scaler.transform(stock_X_test[numerical_columns_stock])
+
+numerical_columns_stock2 = stock2_X_train.select_dtypes(include=['float64', 'int64']).columns
+stock2_X_train[numerical_columns_stock2] = scaler.fit_transform(stock2_X_train[numerical_columns_stock2])
+stock2_X_val[numerical_columns_stock2] = scaler.transform(stock2_X_val[numerical_columns_stock2])
+stock2_X_test[numerical_columns_stock2] = scaler.transform(stock2_X_test[numerical_columns_stock2])
 
 # Vader-Daten skalieren
 numerical_columns_vader = vader_X_train.select_dtypes(include=['float64', 'int64']).columns
@@ -78,6 +100,13 @@ X_train_stock, y_train_stock = create_sequences(stock_X_train.reset_index(drop=T
 X_val_stock, y_val_stock = create_sequences(stock_X_val.reset_index(drop=True), stock_y_val.reset_index(drop=True), window_size)
 X_test_stock, y_test_stock = create_sequences(stock_X_test.reset_index(drop=True), stock_y_test.reset_index(drop=True), window_size)
 
+X_train_stock2, y_train_stock2 = create_sequences(stock2_X_train.reset_index(drop=True), stock2_y_train.reset_index(drop=True), window_size)
+X_val_stock2, y_val_stock2 = create_sequences(stock2_X_val.reset_index(drop=True), stock2_y_val.reset_index(drop=True), window_size)
+X_test_stock2, y_test_stock2 = create_sequences(stock2_X_test.reset_index(drop=True), stock2_y_test.reset_index(drop=True), window_size)
+
+
+
+
 # Sequenzen für Vader-Daten
 X_train_vader, y_train_vader = create_sequences(vader_X_train.reset_index(drop=True), vader_y_train.reset_index(drop=True), window_size)
 X_val_vader, y_val_vader = create_sequences(vader_X_val.reset_index(drop=True), vader_y_val.reset_index(drop=True), window_size)
@@ -98,6 +127,12 @@ def save_to_npy(output_dir, X, y, file_prefix):
 save_to_npy('../../model/HLOCV',X_train_stock, y_train_stock, 'stock_train')
 save_to_npy('../../model/HLOCV', X_val_stock, y_val_stock, 'stock_val')
 save_to_npy('../../model/HLOCV',X_test_stock, y_test_stock, 'stock_test')
+
+save_to_npy('../../model/HLOCV',X_train_stock2, y_train_stock2, 'stock2_train')
+save_to_npy('../../model/HLOCV', X_val_stock2, y_val_stock2, 'stock2_val')
+save_to_npy('../../model/HLOCV',X_test_stock2, y_test_stock2, 'stock2_test')
+
+
 
 # Vader-Daten speichern
 save_to_npy('../../model/HLOCV_VADER',X_train_vader, y_train_vader, 'vader_train')

@@ -16,6 +16,8 @@ data['OBV'] = ta.obv(data['Close'], data['Volume'])
 data['ATR'] = ta.atr(data['High'], data['Low'], data['Close'], length=14)
 
 # Profitchange calculating and labelin
+data['Change_Close'] = data['Close'].diff()
+
 data['percent_change_close'] = data['Close'].pct_change()
 
 data['Profit_Trend_Label'] = (data['percent_change_close'] > 0).astype(int)

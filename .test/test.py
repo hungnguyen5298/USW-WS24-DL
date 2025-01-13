@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
 # Load the data
-X_train_stock = np.load('../model/HLOCV/stock_train_X.npy', allow_pickle=True)
+X_train = np.load('../model/HLOCV/stock2_train_X.npy', allow_pickle=True)
 
-print(X_train_stock.shape)
+input_size = X_train.shape[2]
+seq_len = X_train.shape[1]
+
+print(input_size)
+print(seq_len)
+print(X_train.shape)

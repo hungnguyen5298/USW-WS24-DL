@@ -7,7 +7,7 @@ ticker = "AAPL"
 apple_stock = yf.Ticker(ticker)
 
 # Define start and end dates as keyword arguments
-start_date = "2024-12-04"
+start_date = "2024-11-15"
 end_date = "2025-06-01"
 
 # Fetch historical data with a 30-minute interval
@@ -18,7 +18,7 @@ historical_data.reset_index(inplace=True)
 historical_data['Datetime'] = historical_data['Datetime'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
 # Path to save the CSV file
-csv_file = "../project_raw_data/stock_data_apple_full_5m.csv"
+csv_file = "../project_raw_data/stock_data_apple_full_5m_longer.csv"
 
 # Check if the CSV file already exists
 if os.path.exists(csv_file):

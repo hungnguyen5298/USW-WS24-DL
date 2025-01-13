@@ -1,13 +1,12 @@
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+# Laden der Daten
+data = pd.read_csv('../data_preprocessing/stock_data_feature_engineering/stock_data_apple_indicators_longer.csv')
 
-X_train = np.load('../model/HLOCV/stock_train_X.npy', allow_pickle=True)
-print(X_train)
-# Korrelationsmatrix
+data = data.drop(columns=['Timestamp'])
+correlation = data.corr()
+print(correlation['Change_Close'])
 
-
-corr_matrix = np.corrcoef(X_train.reshape(-1, X_train.shape[2]), rowvar=False)
-sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm")
-plt.show()

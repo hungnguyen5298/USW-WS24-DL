@@ -2,31 +2,30 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+from tensorflow.keras.utils import plot_model
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout, SimpleRNN
-from tensorflow.keras.optimizers import Adam, SGD
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.regularizers import l2, l1
 
-
-# Daten laden, vorbreiten und konvertieren
-X_train = np.load('finbert_train_X.npy')
-y_train = np.load('finbert_train_y.npy')
+# Daten laden, vorbereiten und konvertieren
+X_train = np.load('stock2_train_X.npy')
+y_train = np.load('stock2_train_y.npy')
 X_train = tf.convert_to_tensor(X_train, dtype=tf.float32)
 y_train = tf.convert_to_tensor(y_train, dtype=tf.float32)
 
-X_val = np.load('finbert_val_X.npy')
-y_val = np.load('finbert_val_y.npy')
+X_val = np.load('stock2_val_X.npy')
+y_val = np.load('stock2_val_y.npy')
 X_val = tf.convert_to_tensor(X_val, dtype=tf.float32)
 y_val = tf.convert_to_tensor(y_val, dtype=tf.float32)
 
-X_test = np.load('finbert_test_X.npy')
-y_test = np.load('finbert_test_y.npy')
+X_test = np.load('stock2_test_X.npy')
+y_test = np.load('stock2_test_y.npy')
 X_test = tf.convert_to_tensor(X_test, dtype=tf.float32)
 y_test = tf.convert_to_tensor(y_test, dtype=tf.float32)
 
 # Batch-Größe definieren
-batch_size = 3
+batch_size = 16
 
 # Trainings- und Validierungsdatensatz erstellen
 train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(batch_size, drop_remainder=True)
@@ -36,22 +35,13 @@ test_dataset = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(batch_
 # Modell definieren
 input_size = X_train.shape[2]
 seq_len = X_train.shape[1]
-
-'''model = Sequential([
-    LSTM(32, input_shape=(seq_len, input_size), recurrent_regularizer='l2',return_sequences=False),
-    #Dropout(0.1),
-    Dense(1, activation = 'sigmoid')
-])'''
-
-'''model = Sequential([
-    LSTM(32, input_shape=(seq_len, input_size), return_sequences=True),
-    LSTM(16, return_sequences=False),
-    Dense(1, activation='sigmoid')
-])'''
-
 model = Sequential([
-    LSTM(32, input_shape=(seq_len, input_size), return_sequences=False),
-    #Dense(10, activation='relu'),
+    LSTM(32, input_shape=(seq_len, input_size), return_sequences=True),
+    Dropout(0.2),
+    LSTM(64, input_shape=(seq_len, input_size), return_sequences=True),
+    Dropout(0.2),
+    LSTM(128, input_shape=(seq_len, input_size), return_sequences=False),
+    Dropout(0.2),
     Dense(1, activation='sigmoid')
 ])
 
@@ -61,7 +51,7 @@ model.summary()
 model.compile(
     loss='binary_crossentropy',
     #optimizer=SGD(learning_rate=0.0001),
-    optimizer= Adam(learning_rate=0.0001),
+    optimizer= Adam(learning_rate=0.001),
     metrics=['accuracy']
 )
 
@@ -73,7 +63,7 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=20, restore_best_wei
 history = model.fit(
     train_dataset,
     validation_data=val_dataset,
-    epochs=300,
+    epochs=500,
     verbose=1,
     callbacks=[early_stopping]
 )
