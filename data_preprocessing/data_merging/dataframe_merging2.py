@@ -18,12 +18,12 @@ finbert = finbert[14:]'''
 
 # DataFrame for VADER creating
 result = merge_dataframes(vader, stock, 'Timestamp', 'Timestamp', 'inner')
-result = result.drop(columns=['timestamp_shifted', 'Volume'])
-result = result[['Timestamp', 'VADER_Positive', 'VADER_Neutral', 'VADER_Negative', 'Open', 'High', 'Low', 'Close', 'Change_Close',  'Volatility', 'RSI', 'OBV', 'ATR', 'Profit_Trend_Label']]
+result = result.drop(columns=['timestamp_shifted'])
+result = result[['Timestamp', 'VADER_Positive', 'VADER_Neutral', 'VADER_Negative', 'Open', 'High', 'Low', 'Close', 'Volume',  'Volatility', 'RSI', 'OBV', 'ATR', 'SMA_14','EMA_14','ROC_14']]
 result.to_csv('vader_stock_joined.csv', index=False)
 
 # DataFrame for FinBERT creating
 result = merge_dataframes(finbert, stock, 'Timestamp', 'Timestamp', 'inner')
-result = result.drop(columns=['timestamp_shifted', 'Volume'])
-result = result[['Timestamp', 'Positive_Prob', 'Neutral_Prob', 'Negative_Prob', 'Open', 'High', 'Low', 'Close', 'Change_Close', 'Volatility', 'RSI', 'OBV', 'ATR', 'Profit_Trend_Label']]
+result = result.drop(columns=['timestamp_shifted'])
+result = result[['Timestamp', 'Positive_Prob', 'Neutral_Prob', 'Negative_Prob', 'Open', 'High', 'Low', 'Close', 'Volume', 'Volatility', 'RSI', 'OBV', 'ATR', 'SMA_14','EMA_14','ROC_14']]
 result.to_csv('finbert_stock_joined.csv', index=False)
