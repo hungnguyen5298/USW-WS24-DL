@@ -37,7 +37,7 @@ Daraus leiteten wir die folgende Hypothese ab: **_"Die Kombination von Sentiment
 
 Zur Überprüfung dieser Hypothese wurden drei Experimente durchgeführt:
 
-* Ein LSTM-Modell, das ausschließlich Börsendaten (HLOCV) nutzt, und dient als Baseline-Modelle.
+* Ein LSTM-Modell, das ausschließlich Börsendaten (HLOCV) nutzt, und dient als Baseline-Modell.
 * Ein LSTM-Modell, das HLOCV-Daten und Sentiment-Daten aus VADER nutzt.
 * Ein LSTM-Modell, das HLOCV-Daten und Sentiment-Daten aus FinBERT nuzt.
 
@@ -80,7 +80,7 @@ Die Textdaten (Nachrichten, Artikel, Posts, Kommentare,...) werden normalisiert:
 
 ### **3.3 Datentokenisierung:**
 * Normalisierte Texte werden in einzelne Wörter (Tokens) zerlegt.
-* Stopwörter entfernt (z. B. "der", "und", "ein").
+* Stoppwörter entfernt (z. B. "der", "und", "ein").
 * Die Wörter auf ihre Grundform reduziert (Lemmatization).
 
 ### _**Diese Schritte sind notwendig, da VADER diese Verarbeitung nicht automatisch durchführt, im Gegensatz zu FinBERT.**_
